@@ -2,6 +2,7 @@
   "expo": {
     "name": "PlanIt",
     "slug": "PlanIt",
+    "scheme": "planit",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -19,10 +20,17 @@
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "package": "com.exsoccer.PlanIt"
     },
     "web": {
       "favicon": "./assets/favicon.png"
+    },
+    "owner": "exsoccer",
+    "extra": {
+      "eas": {
+        "projectId": "6721ceb6-6ff4-4456-8885-29b3e65918ed"
+      }
     }
   }
 }

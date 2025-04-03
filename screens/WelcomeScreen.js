@@ -13,7 +13,6 @@ export default function WelcomeScreen() {
           Gerencie atendimentos, clientes e agenda em um só lugar. Fácil, gratuito e feito para autônomos.
         </Text>
 
-        {/* Indicadores de página (exemplo de 3 pontinhos) */}
         <View style={styles.dotsContainer}>
           <View style={[styles.dot, { backgroundColor: '#ccc' }]} />
           <View style={[styles.dot, { backgroundColor: '#ccc' }]} />
@@ -21,10 +20,13 @@ export default function WelcomeScreen() {
         </View>
       </View>
 
-      {/* Botão de ação */}
       <TouchableOpacity style={styles.button} onPress={() => { navigation.navigate('SignupLogin') }}>
         <Text style={styles.buttonText}>Comece Agora</Text>
       </TouchableOpacity>
+      <TouchableOpacity onPress={() => navigation.navigate('UserProfile')}>
+        <Text>Ver Perfil (Botão para teste, depois remover) </Text>
+      </TouchableOpacity>
+
     </View>
   )
 }

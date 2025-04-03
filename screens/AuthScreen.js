@@ -1,15 +1,32 @@
-import React, { useState } from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  TouchableOpacity,
-  Modal,
-  Image,
-} from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { useNavigation } from '@react-navigation/native';
+import { View, Text, StyleSheet, TouchableOpacity, Modal, Image } from 'react-native';
+import * as Google from 'expo-auth-session/providers/google';
+import * as WebBrowser from 'expo-web-browser';
+
+WebBrowser.maybeCompleteAuthSession();
 
 export default function AuthScreen() {
   const [modalVisible, setModalVisible] = useState(true);
+  const navigation = useNavigation();
+
+  
+  const [request, response, promptAsync] = Google.useAuthRequest({
+    expoClientId: 'YOUR_EXPO_CLIENT_ID.apps.googleusercontent.com',
+    androidClientId: '776698076336-iaad3o4adm40u2assbmkpl8e0kjvqghq.apps.googleusercontent.com',
+    iosClientId: 'YOUR_IOS_CLIENT_ID.apps.googleusercontent.com',
+    webClientId: '776698076336-7mtm2klaq1ptps79ve9gj0kpftf3hh8i.apps.googleusercontent.com',
+    scopes: ['profile', 'email'],
+  });
+
+  useEffect(() => {
+    if (response?.type === 'success') {
+      const { authentication } = response;
+      console.log('Token de acesso do Google:', authentication?.accessToken);
+      setModalVisible(false);
+      navigation.navigate('Home');
+    }
+  }, [response]);
 
   return (
     <View style={styles.container}>
@@ -23,7 +40,7 @@ export default function AuthScreen() {
           <View style={styles.modalContent}>
             <TouchableOpacity
               style={styles.closeButton}
-              onPress={() => setModalVisible(false)}
+              onPress={() => navigation.goBack()}
             >
               <Text style={styles.closeText}>×</Text>
             </TouchableOpacity>
@@ -32,34 +49,26 @@ export default function AuthScreen() {
               Selecione seu método preferido para continuar configurando sua conta
             </Text>
 
-            <TouchableOpacity style={styles.button}>
+            <TouchableOpacity style={styles.button} onPress={() => { navigation.navigate('RegisterScreen') }}>
               <Text style={styles.buttonText}>Continuar com e-mail</Text>
             </TouchableOpacity>
 
-            <TouchableOpacity style={styles.buttonSecondary}>
-              <Text style={styles.buttonText}>Continuar com telefone</Text>
-            </TouchableOpacity>
+            {/* Adicionando o 'ou' entre os botões */}
+            <Text style={styles.orText}>ou</Text>
 
-            {/* Contêiner para os botões de redes sociais */}
             <View style={styles.socialLoginContainer}>
-              {/* Botão Google */}
-              <TouchableOpacity style={[styles.socialButton, styles.leftSocialButton]}>
+              <TouchableOpacity
+                style={[styles.socialButton, styles.leftSocialButton]}
+                onPress={() => promptAsync()}
+                disabled={!request}
+              >
                 <Image
                   source={require('../assets/google.png')}
                   style={styles.socialIcon}
                 />
               </TouchableOpacity>
-
-              {/* Botão Apple */}
-              <TouchableOpacity style={[styles.socialButton, styles.rightSocialButton]}>
-                <Image
-                  source={require('../assets/appleicon.png')}
-                  style={styles.socialIcon}
-                />
-              </TouchableOpacity>
             </View>
 
-            {/* Texto abaixo dos botões sociais */}
             <Text style={styles.privacyText}>
               Se você estiver criando uma nova conta,{' '}
               <Text style={styles.linkText}>Termos e Condições</Text> e{' '}
@@ -119,28 +128,17 @@ const styles = StyleSheet.create({
     width: '100%',
     marginBottom: 10,
   },
-  buttonSecondary: {
-    backgroundColor: '#FFFFFF',
-    padding: 15,
-    borderRadius: 10,
-    alignItems: 'center',
-    width: '100%',
-    borderWidth: 1,
-    borderColor: '#797979',
-    marginBottom: 10,
-  },
   buttonText: {
     fontSize: 16,
     fontWeight: 'bold',
   },
-  /* Estilos para os botões de redes sociais */
   socialLoginContainer: {
-    width: '100%', // Container ocupa toda a largura do modalContent
+    width: '100%',
     flexDirection: 'row',
     marginTop: 10,
   },
   socialButton: {
-    flex: 1, // Cada botão ocupa metade do espaço do container
+    flex: 1,
     backgroundColor: '#FFFFFF',
     borderWidth: 1,
     borderColor: '#797979',
@@ -149,17 +147,13 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   leftSocialButton: {
-    marginRight: 5, // Espaço entre o botão da esquerda e o da direita
-  },
-  rightSocialButton: {
-    marginLeft: 5, // Espaço entre o botão da direita e o da esquerda
+    marginRight: 5,
   },
   socialIcon: {
     width: 140,
     height: 24,
     resizeMode: 'contain',
   },
-  /* Estilos para o texto de privacidade */
   privacyText: {
     fontSize: 12,
     color: '#666',
@@ -170,5 +164,10 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: '#000',
   },
+  orText: {
+    fontSize: 14,
+    color: '#666',
+    marginVertical: 10,
+    textAlign: 'center',
+  },
 });
-
